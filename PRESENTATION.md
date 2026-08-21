@@ -106,7 +106,9 @@ Correctness: you cannot hotfix consensus, a bad block is final and the bug is wo
 -->
 
 ---
-# How did we utilize Rust in Polkadot?
+
+# Polkadot
+
 ---
 ## Polkadot-SDK
 
@@ -253,15 +255,14 @@ Same counter, two ways. Left is the runtime as functions over raw key-value stor
 Right is FRAME: storage keys, SCALE codecs, dispatch and metadata are generated. A few attributes, and wallets can see the call exists.
 -->
 
----
-## Runtime - a WASM blob
+## Runtime
 
 The chain's whole logic, compiled from Rust to WASM and stored on-chain
 
 - **Executed block by block** - the node runs whatever blob is in storage
 - **Forkless upgrades** - one transaction swaps the blob, next block runs the new logic
 - **No coordination** - no node updates, no repo pulls, no hard fork
-- **Replay** - anyone can replay whole blockchain with runtimes that were active in the time.
+- **Replay** - anyone can replay whole blockchain with runtimes that were active at the time.
 - **The cost** - `no_std` only, the std library is off limits
 
 <!--
@@ -292,6 +293,82 @@ Why only Rust. It needs four things at once: C-level speed, predictable latency,
 - C/C++ has the speed but parses untrusted bytes from the open internet on machines that hold keys - one memory bug is a remote exploit.
 - Go or Java are safe but GC pauses land in the 2s parachain validation window, and a validator that misses deadlines misses blocks.
 - And the trick nothing else offers: the node and the runtime share the same crates and SCALE codec, because the same no_std Rust compiles to native for the node and to WASM for the runtime. One language end to end, no spec drift between the two halves.
+-->
+
+---
+
+# Rust in Polkadot
+
+---
+
+## Macros
+
+You write the logic, macros write the protocol
+
+- **`#[pallet::*]`** - storage, calls, events, errors and metadata from a few attributes
+- **`construct_runtime!`** - composes pallets into a runtime with one macro call
+- **`#[derive(Encode, Decode, TypeInfo)]`** - SCALE codec and metadata for every type
+- **`#[benchmarks]`** - benchmark suites that produce the weight of every call
+- **The payoff** - the mechanical 90% is generated, reviewed once, reused everywhere
+
+<!--
+Everything on the left of the Without FRAME slide is what these macros generate.
+-->
+
+---
+
+## Generics
+
+One pallet, any chain: configuration through traits
+
+```rust
+#[pallet::config]
+pub trait Config: frame_system::Config {
+    type RuntimeEvent: From<Event<Self>>;
+    type Currency: Currency<Self::AccountId>;
+    type MaxProposals: Get<u32>;
+}
+```
+
+- **`Config` trait** - a pallet declares what it needs, the runtime supplies it
+- **Loose coupling** - pallets depend on traits like `Currency`, never on each other
+- **Compile-time wiring** - monomorphization, no dynamic dispatch, zero runtime cost
+- **Reuse** - the same pallet code runs on hundreds of different chains
+
+<!--
+AccountId, balances, block numbers are all associated types. Kusama and Polkadot run the same pallets with different Config impls.
+-->
+
+---
+
+## Predictable execution
+
+The runtime is a pure function: same input, same output, on every node
+
+- **Deterministic by construction** - no floats, no clocks, no randomness, no threads
+- **Weights** - every call benchmarked, worst-case cost known before execution
+- **Runtime as a library** - blocks execute in plain unit tests, no node needed
+- **XCM simulator** - relay + parachains in memory, cross-chain messages in a test
+- **try-runtime** - replay real chain state against new code before it ships
+
+<!--
+Determinism is consensus: one node computing a different state root is a fork. Pure Rust makes the whole runtime testable as a normal crate.
+-->
+
+---
+
+## WASM execution
+
+The same Rust, two targets: native for the node, WASM for the chain
+
+- **`wasm32-unknown-unknown`** - the runtime builds as a `no_std` WASM blob
+- **Wasmtime** - the node compiles and runs whatever blob is in state
+- **Sandboxed** - WASM is the trust boundary between node and runtime
+- **Host functions** - storage, crypto and hashing provided by the node
+- **Why it matters** - logic as an on-chain blob is what makes forkless upgrades possible
+
+<!--
+One codebase, two compilation targets, no spec drift. Compiled runtimes are cached, so the JIT cost is paid once per upgrade.
 -->
 
 ---
@@ -430,10 +507,6 @@ The story: the top three are all Rust, five of the top ten are Rust, and PolkaJa
     <p><strong>Rust SC</strong><br /><span style="opacity: 0.6;">Polkadot</span></p>
   </div>
   <div>
-    <img src="./assets/logos/ink.svg" alt="ink!" style="max-height: 95px; max-width: 190px;" />
-    <p><strong>ink!</strong><br /><span style="opacity: 0.6;">Polkadot</span></p>
-  </div>
-  <div>
     <img src="./assets/logos/anchor.png" alt="Anchor" style="max-height: 95px; max-width: 190px;" />
     <p><strong>Anchor</strong><br /><span style="opacity: 0.6;">Solana</span></p>
   </div>
@@ -449,13 +522,15 @@ The story: the top three are all Rust, five of the top ten are Rust, and PolkaJa
     <img src="./assets/logos/cosmwasm.svg" alt="CosmWasm" style="max-height: 95px; max-width: 190px;" />
     <p><strong>CosmWasm</strong><br /><span style="opacity: 0.6;">Cosmos ecosystem</span></p>
   </div>
+  <div>
+    <img src="./assets/logos/multiversx.svg" alt="MultiversX" style="max-height: 95px; max-width: 190px;" />
+    <p><strong>multiversx-sc</strong><br /><span style="opacity: 0.6;">MultiversX</span></p>
+  </div>
 </div>
 
-<p style="opacity: 0.5; text-align: center; font-size: 0.7em; margin-top: 0.5em;">Also: Soroban (Stellar), Stylus (Arbitrum), Internet Computer, MultiversX, Casper</p>
+<p style="opacity: 0.5; text-align: center; font-size: 0.7em; margin-top: 0.5em;">Also: Soroban (Stellar), Internet Computer, Casper</p>
 
 <!--
-ink!: Rust eDSL for Polkadot contracts. Historically compiled to Wasm, ink! v6 targets RISC-V and runs on PolkaVM via pallet_revive. Just a brief mention here, the native path comes next.
-
 Rust SC: plain Rust contracts compiled straight to RISC-V for PolkaVM with cargo pvm-contract. The next slides go deep on this.
 
 Anchor: the de facto Solana framework. Proc macros generate account validation, instruction dispatch and an IDL, cutting most of the raw runtime boilerplate.
@@ -466,7 +541,9 @@ near-sdk-rs: Rust is the primary contract language on NEAR, compiled to Wasm.
 
 CosmWasm: Rust contracts on Wasm, the contract layer for much of Cosmos: Neutron, Osmosis, Injective, Secret and dozens of other chains.
 
-Others: Soroban is Stellar's Rust-only contract platform, Stylus lets you run Rust next to the EVM on Arbitrum, ICP canisters have a first-class Rust CDK, MultiversX and Casper are Rust-first too. Aptos and Sui use Move, which is Rust-inspired but its own language.
+multiversx-sc: MultiversX is Rust-first, contracts compile to Wasm and the sc-meta tooling handles ABI generation and builds.
+
+Others: Soroban is Stellar's Rust-only contract platform, ICP canisters have a first-class Rust CDK, and Casper is Rust-first too. Aptos and Sui use Move, which is Rust-inspired but its own language.
 -->
 
 ---
@@ -490,10 +567,107 @@ cargo-pvm-contract is the newest piece: a Cargo subcommand for writing contracts
 Dual VM stack: Polkadot Hub runs REVM for bytecode-level EVM compatibility and PolkaVM for performance. Deploy your Ethereum contract unchanged, or recompile it for speed - same chain either way.
 -->
 
-## RISC-V and why was it built in Rust
+---
 
-## Rust SC \- explain and some short code against Solidity
+## Why RISC-V and why Rust?
 
-## CDM \- explaining briefly
+**The ISA choice**
 
-## Statistics
+- **RISC-V, not a custom bytecode** - anything with an LLVM backend compiles to it: Rust, C, C++, and Solidity via revive
+- **Register-based** - maps straight onto x86-64 and arm64 registers, unlike the EVM's stack machine
+- **Small target** - RV32EM fits on one page, easy to specify and audit
+- **Deterministic and versioned** - operational semantics frozen per version, exactly what consensus needs
+
+**Why Rust for the VM**
+
+- **One engineer built it** - Jan Bujak wrote PolkaVM mostly solo, Rust's productivity in one sentence
+- **Predictable latency, no GC** - critical for validator execution, every recompiler path is fast and deterministic
+- **Memory safety** - the VM parses untrusted RISC-V binaries from the chain and runs them sandboxed, one memory bug is an exploit
+- **Fast by design** - single-pass O(n) recompiler, near-native execution, ~170µs compile time vs ~62ms for Wasmtime cranelift
+- **Simple to verify** - "a single programmer can write an interpreter fully compatible with this VM in less than a week"
+
+<!--
+RISC-V is not a random choice. The EVM has no mainstream compiler backends - you write Solidity, period. WASM is a compilation target but it's a stack machine with complex lowering. RISC-V is a lean register ISA with mature LLVM support, and the register model translates almost mechanically into x86-64/arm64 native code.
+
+PolkaVM's design goals: 128KB baseline per instance, no wasted virtual address space, fully deterministic, async gas metering, cross-platform with interpreter fallback. It targets only RV32EM - no float, no SIMD, no full 32-register - intentionally minimal.
+
+The numbers: compilation is ~170µs (PolkaVM recompiler) vs ~62ms (Wasmtime cranelift) - that's 360x faster compile. Execution on the pinky NES emulator benchmark is 6.4ms vs 5.8ms for Wasmtime cranelift - competitive. The guest is a real NES emulator running a real game, not a microbenchmark.
+
+The "one week" quote is from the PolkaVM README non-goals: the ISA is so simple you can reimplement the interpreter from spec in a few days. That's a correctness and audit property as much as a simplicity flex.
+-->
+
+---
+
+## Rust vs Solidity on PolkaVM
+
+Same counter contract, two paths in
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25em; align-items: start; font-size: 0.7em;">
+
+<div>
+
+**Solidity** (revive / resolc)
+
+```solidity
+contract Counter {
+    uint256 public count;
+
+    function increment() public {
+        count += 1;
+    }
+}
+```
+
+- Deploy unchanged via REVM, or recompile to PVM for speed
+- Ethereum tooling works: Hardhat, Foundry, MetaMask, Remix
+- Existing Solidity contracts migrate as-is, retest for PVM semantics
+
+</div>
+
+<div>
+
+**Rust** (cargo pvm-contract)
+
+```rust
+#![no_std]
+#![no_main]
+include!("../panic_handler.rs");
+
+use uapi::{
+    StorageFlags,
+    HostFn,
+    HostFnImpl as api,
+};
+
+static mut COUNTER: u64 = 0;
+
+#[no_mangle]
+#[polkavm_derive::polkavm_export]
+pub extern "C" fn deploy() {}
+
+#[no_mangle]
+#[polkavm_derive::polkavm_export]
+pub extern "C" fn call() {
+    unsafe { COUNTER += 1; }
+}
+```
+
+- `no_std` binary, compiles to `.polkavm` blob
+- Same language as the chain, shared crates and codec
+- `cargo pvm-contract` abstracting the boilerplate away
+
+</div>
+
+</div>
+
+<!--
+Two doors into the same VM. Solidity is the compatibility door: existing contracts deploy unchanged on REVM, or recompile through revive (solc YUL -> custom LLVM -> RISC-V) for PVM performance. Tooling is identical: Hardhat, Foundry, Remix all work through the ETH RPC proxy.
+
+Rust is the native door: the same language as the chain itself. The contract compiles to a bare RISC-V binary - no OS, no allocator unless you bring one. Host functions are exposed through the uapi crate: storage get/set, balance, transfers, calls to other contracts, events.
+
+The counter example is real but minimal. In practice you'd reach for higher-level abstractions. But the point stands: Rust gives you full control and zero runtime overhead, Solidity gives you instant compatibility and the ecosystem. Same chain, your call which door to walk through.
+
+Proc macros for dispatch and ABI generation are landing in cargo pvm-contract - the boilerplate will shrink to something closer to the Solidity snippet.
+-->
+
+---
