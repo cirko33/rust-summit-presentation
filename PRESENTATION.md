@@ -90,12 +90,25 @@ Zebra is a Zcash alt client, Floresta is a Bitcoin alt client.
 # Why they use it
 ---
 ## Examples
---
 
-- **Memory safety without a garbage collector**
-- **Predictable performance** - no GC pauses on the hot path
-- **Fearless concurrency** - networking, DB and VM all run in parallel
-- **Compile-time correctness** - bugs in consensus cost real money
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.2em; margin-top: 1.2em;">
+  <div style="background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.18); border-radius: 12px; padding: 1.1em 1.3em;">
+    <strong>Memory safety</strong>
+    <p style="margin: 0.4em 0 0; opacity: 0.75;">without a garbage collector</p>
+  </div>
+  <div style="background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.18); border-radius: 12px; padding: 1.1em 1.3em;">
+    <strong>Predictable performance</strong>
+    <p style="margin: 0.4em 0 0; opacity: 0.75;">no GC pauses on the hot path</p>
+  </div>
+  <div style="background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.18); border-radius: 12px; padding: 1.1em 1.3em;">
+    <strong>Fearless concurrency</strong>
+    <p style="margin: 0.4em 0 0; opacity: 0.75;">networking, DB and VM all run in parallel</p>
+  </div>
+  <div style="background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.18); border-radius: 12px; padding: 1.1em 1.3em;">
+    <strong>Compile-time correctness</strong>
+    <p style="margin: 0.4em 0 0; opacity: 0.75;">bugs in consensus cost real money</p>
+  </div>
+</div>
 
 <!--
 Memory safety: most critical CVEs in C/C++ systems are memory bugs. In a chain client that means an exploit or a chain halt. Rust removes the whole class without adding a GC.
