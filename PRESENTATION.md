@@ -3,9 +3,10 @@ marp: true
 theme: black
 class: invert
 html: true
+paginate: true
 backgroundColor: '#000000'
 style: |
-  section h1 { font-size: 2.4em; }
+  section h1 { font-size: 2.4em; color: #ffffff; }
   section h2 { font-size: 1.8em; }
   section h3 { font-size: 1.4em; }
   section::before {
@@ -21,6 +22,7 @@ style: |
 ---
 
 <!-- _class: invert title -->
+<!-- _paginate: false -->
 ![bg right fit](./assets/V1.png)
 
 <img src="./assets/Parity_Logo_White.svg" alt="Parity" style="position: absolute; top: 32px; left: 32px; width: 220px;" />
@@ -28,7 +30,7 @@ style: |
 # Rust in Protocols and Smart Contracts
 
 ---
-# Introduction
+## Introduction
 
 <div style="display: flex; gap: 2em; justify-content: center; text-align: center;">
   <div>
@@ -107,7 +109,9 @@ Reth is an execution client, Lighthouse and Grandine are consensus clients, Trin
 Zebra is a Zcash alt client, Floresta is a Bitcoin alt client.
 -->
 ---
-# Why Rust? 
+
+<h1 style="display: flex; align-items: center; gap: 0.5em;">Why Rust? <img src="./assets/logos/rust.png" alt="Ferris" style="max-height: 90px;" /></h1>
+
 ---
 ## Why Rust?
 
@@ -144,15 +148,17 @@ Correctness: you cannot hotfix consensus, a bad block is final and the bug is wo
 
 ---
 
-# Polkadot
+<h1 style="display: flex; align-items: center; gap: 0.5em;">Polkadot <img src="./assets/logos/polkadot.svg" alt="Polkadot" style="max-height: 90px;" /></h1>
 
 ---
-## Polkadot-SDK
+## Polkadot SDK
 
-Our Rust monorepo that is built in Rust
+Our monorepo built in Rust
 
-- **Substrate** - the framework: networking, consensus, database, RPC
-- **FRAME** - composable runtime modules (pallets) for building chain logic
+- **Substrate**
+- **FRAME**
+
+<img src="./assets/qr-code.png" alt="Polkadot SDK QR" style="position: absolute; right: 90px; top: 50%; transform: translateY(-50%); width: 300px;" />
 
 <!--
 Polkadot SDK is our monorepo, ~3 million lines of Rust, one of the largest Rust codebases anywhere. Two parts matter for this talk: Substrate and FRAME.
@@ -165,12 +171,12 @@ Everything is Rust end to end: the node, the runtime, the tooling. The runtime c
 ---
 ## Substrate
 
-The framework that gives you a working blockchain out of the box
+Framework for building blockchains
 
-- **Node + Runtime** - the node runs the infrastructure, the runtime is your chain's logic
-- **Infrastructure for free** - libp2p networking, database, transaction pool, RPC
+- **Node + Runtime** - the node runs the infrastructure, the runtime defines logic
+- **Infrastructure** - libp2p networking, database, transaction pool, RPC
 - **Pluggable consensus** - Aura, BABE + GRANDPA, PoW, or write your own
-- **Chain-agnostic node** - the node just executes whatever runtime you give it
+- **Chain-agnostic node** - the node executes whatever runtime gives it
 - **Battle-tested** - Polkadot, Kusama and hundreds of parachains run on it
 
 <!--
@@ -183,7 +189,11 @@ You write the runtime, Substrate handles the rest. The next slide shows what tha
 
 --- 
 
-## Example of Substrate code
+## Substrate code
+
+<style scoped>
+pre { font-size: 0.65em; }
+</style>
 
 ```rust
 #[frame_support::pallet]
@@ -227,13 +237,11 @@ You pick pallets off the shelf, write your own for the logic that makes your cha
 -->
 
 ---
-## Without FRAME vs with FRAME
+## Without FRAME
 
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25em; align-items: start; font-size: 0.72em;">
-
-<div>
-
-**Without FRAME**
+<style scoped>
+pre { font-size: 0.65em; }
+</style>
 
 ```rust
 const COUNTER_KEY: &[u8] = b"counter";
@@ -258,11 +266,16 @@ fn dispatch(origin: Origin, mut call: &[u8])
 }
 ```
 
-</div>
+<!--
+The runtime as functions over raw key-value storage: you invent storage keys and hope no other module picks the same one, you decode the call bytes yourself, you route on a call index yourself. No metadata, no events, no weights, no automatic rollback.
+-->
 
-<div>
+---
+## With FRAME
 
-**With FRAME**
+<style scoped>
+pre { font-size: 0.65em; }
+</style>
 
 ```rust
     #[pallet::storage]
@@ -282,21 +295,15 @@ fn dispatch(origin: Origin, mut call: &[u8])
     }
 ```
 
-</div>
-
-</div>
-
 <!--
-Same counter, two ways. Left is the runtime as functions over raw key-value storage: you invent storage keys and hope no other module picks the same one, you decode the call bytes yourself, you route on a call index yourself. No metadata, no events, no weights, no automatic rollback.
-
-Right is FRAME: storage keys, SCALE codecs, dispatch and metadata are generated. A few attributes, and wallets can see the call exists.
+Same counter with FRAME: storage keys, SCALE codecs, dispatch and metadata are generated. A few attributes, and wallets can see the call exists.
 -->
 
 ---
 
 ## Runtime
 
-The chain's whole logic, compiled from Rust to WASM and stored on-chain
+The chain's whole logic, compiled from Rust to **WASM** and stored on-chain
 
 - **Executed block by block** - the node runs whatever blob is in storage
 - **Forkless upgrades** - one transaction swaps the blob, next block runs the new logic
@@ -316,7 +323,7 @@ Trade-off: there is no OS under that WASM, so the runtime is no_std Rust - no fi
 
 ---
 
-### Example of runtime configuration
+### Runtime Configuration code
 
 ```rust
 #[derive_impl(frame_system::config_preludes::SolochainDefaultConfig)]
@@ -350,7 +357,6 @@ derive_impl fills frame_system's ~30 associated types with sane defaults, you ov
 Everything around the runtime, one Rust binary running dozens of tasks at once
 
 - **Networking** - libp2p: peer discovery, block sync, gossip, parachain traffic
-- **Consensus** - BABE block production and GRANDPA finality as parallel tasks
 - **Database** - Merkle trie state on top of RocksDB / ParityDB
 - **WASM executor** - loads and runs the runtime blob
 - **Hard deadlines** - 6s slots, ~2s to validate a parachain block
