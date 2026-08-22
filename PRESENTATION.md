@@ -372,6 +372,23 @@ Why only Rust. It needs four things at once: C-level speed, predictable latency,
 
 ---
 
+
+## Benchmarking & Weights
+
+- **Weight** - worst-case execution time + storage I/O of a call, measured on reference hardware
+- **`#[benchmarks]`** - a benchmark per call, run against worst-case inputs
+- **Fees** - weight is known before execution, so the fee is too
+- **Block limits** - blocks fill up by weight, execution never blows the slot
+- **Refunds** - a call that used less than its worst case refunds the difference
+
+<!--
+There is no gas metering at runtime - metering costs performance. Instead every call is benchmarked ahead of time on reference hardware, against worst-case inputs, and the result is the weight baked into the runtime.
+
+Because the weight is known before execution, the transaction pool can price and fill blocks without running anything. If the call turns out cheaper than the worst case, the difference is refunded post-dispatch.
+-->
+
+---
+
 # Rust in Polkadot
 
 ---
