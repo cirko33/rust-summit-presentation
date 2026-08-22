@@ -47,8 +47,8 @@ html: true
     <p><strong>Sui</strong></p>
   </div>
   <div>
-    <img src="./assets/logos/oasis.png" alt="Oasis" style="width: 120px;" />
-    <p><strong>Oasis</strong></p>
+    <img src="./assets/logos/aptos.png" alt="Aptos" style="width: 120px;" />
+    <p><strong>Aptos</strong></p>
   </div>
 </div>
 
@@ -211,7 +211,7 @@ You pick pallets off the shelf, write your own for the logic that makes your cha
 
 <div>
 
-**Without**
+**Without FRAME**
 
 ```rust
 const COUNTER_KEY: &[u8] = b"counter";
@@ -350,8 +350,6 @@ Why only Rust. It needs four things at once: C-level speed, predictable latency,
 
 ## Macros
 
-You write the logic, macros write the protocol
-
 - **`#[pallet::*]`** - storage, calls, events, errors and metadata from a few attributes
 - **`construct_runtime!`** - composes pallets into a runtime with one macro call
 - **`#[derive(Encode, Decode, TypeInfo)]`** - SCALE codec and metadata for every type
@@ -365,8 +363,6 @@ Everything on the left of the Without FRAME slide is what these macros generate.
 ---
 
 ## Generics
-
-One pallet, any chain: configuration through traits
 
 ```rust
 #[pallet::config]
@@ -390,8 +386,6 @@ AccountId, balances, block numbers are all associated types. Kusama and Polkadot
 
 ## Predictable execution
 
-The runtime is a pure function: same input, same output, on every node
-
 - **Deterministic by construction** - no floats, no clocks, no randomness, no threads
 - **Weights** - every call benchmarked, worst-case cost known before execution
 - **Runtime as a library** - blocks execute in plain unit tests, no node needed
@@ -406,9 +400,6 @@ Determinism is consensus: one node computing a different state root is a fork. P
 
 ## WASM execution
 
-The same Rust, two targets: native for the node, WASM for the chain
-
-- **`wasm32-unknown-unknown`** - the runtime builds as a `no_std` WASM blob
 - **Wasmtime** - the node compiles and runs whatever blob is in state
 - **Sandboxed** - WASM is the trust boundary between node and runtime
 - **Host functions** - storage, crypto and hashing provided by the node
@@ -423,22 +414,22 @@ One codebase, two compilation targets, no spec drift. Compiled runtimes are cach
 # What is next for Polkadot?
 
 ---
-## PolkaVM
+## PVM & PolkaVM
 
-Our new virtual machine: RISC-V based, written in Rust
+RISC-V based, written in Rust
 
 - **PVM vs PolkaVM** - PVM is the spec (Gray Paper), PolkaVM is Parity's implementation
 - **RISC-V** - a real ISA instead of a custom bytecode, LLVM does the heavy lifting
-- **Register-based** - maps straight onto real CPUs, unlike the EVM's stack machine
-- **Fast** - single-pass O(n) recompiler, near-native execution
-- **Sandboxed** - own process per instance, deterministic, cheap gas metering
+- **Register-based** - maps straight onto real CPUs
+- **Fast** - O(n) recompilation, targets near-native execution
+- **Sandboxed** - per-instance process isolation, deterministic, cheap gas metering
 
 <!--
 PVM is the standard: which instructions exist and what their semantics are, specified in the JAM Gray Paper. PolkaVM is our Rust implementation of it, mostly written by one engineer, Jan Bujak. That's the Rust productivity story in one line.
 
 Why RISC-V: it's a real, open ISA. Anything with an LLVM backend compiles to it - Rust, C, C++, and Solidity through revive. The EVM is a custom stack machine no mainstream compiler targets; RISC-V registers map straight onto x86-64 and arm64 registers, so translation to native code is nearly mechanical.
 
-Fast in two senses. Compilation is single-pass and O(n), so loading a program is near-instant and there are no JIT bombs. Execution is competitive with the best WASM VMs. And the sandbox is a separate process with roughly 128 KB overhead per instance, so isolation doesn't cost the usual gigabytes of address space.
+These are design goals, mostly achieved today. Compilation targets single-pass O(n), so loading a program is near-instant and there are no JIT bombs. Execution is competitive with the best WASM VMs. And the sandbox design calls for a separate process with roughly 128 KB overhead per instance, so isolation doesn't cost the usual gigabytes of address space.
 
 Deterministic execution plus cheap, accurate gas metering - exactly the properties consensus needs from a VM.
 -->
@@ -447,29 +438,23 @@ Deterministic execution plus cheap, accurate gas metering - exactly the properti
 ---
 ## JAM - Join-Accumulate Machine
 
-Polkadot's next protocol: one spec, dozens of clients racing to implement it
+---
 
-- **Gray Paper** - Gavin Wood's spec for replacing the relay chain protocol
-- **Services** - refine runs on cores in parallel, accumulate folds results into state
-- **Runs on PVM** - the RISC-V VM from the previous slides
-- **43 teams** - clients in Rust, C++, Zig, Go, Java, TypeScript, Swift, Python...
-- **Rust is winning** - PolkaJam is the fastest client in the benchmarks
+### What is JAM
+
+- **Refine** - stateless, massively parallel computation on cores
+- **Accumulate** - folds refinement outputs into chain state
+- **OnTransfer** - handles messages between services
+- **Services** - the new abstraction, replacing parachains
+- **Runs on PVM** - the RISC-V VM is the execution layer
 
 <!--
-JAM = Join-Accumulate Machine. It generalizes Polkadot: instead of parachains hardcoded into the protocol, you get services. A service is three functions: refine runs on cores - stateless, massively parallel; accumulate takes the results and folds them into chain state; onTransfer handles service-to-service messages. Parachains become just one service among many. The whole thing runs on PVM, so everything from the PolkaVM slides carries over.
-
-Deliberately multi-client: the JAM Implementers Prize, 10M DOT + 100k KSM, pushed 43 teams to build clients across five language categories, ~15 had submitted Milestone 1 conformance by early 2026. Milestones go from importer, to authorer, to full-speed audited client.
-
-The performance story: PolkaJam, Parity's Rust client, is the fastest in published benchmarks - its recompiler runs about 2.6x faster than baseline. TurboJam (C++) and JamZig (Zig) are the closest chasers; the GC languages are nowhere near. Be honest here: it's not that only Rust CAN be fast, it's that the fastest client is Rust, built by a tiny team, reusing the PolkaVM recompiler - the same single-pass tricks from two slides ago.
-
-Parity also runs the JAM Toaster, a supercomputer-scale test cluster, to test full-network JAM deployments before anything goes live.
+JAM = Join-Accumulate Machine. It generalizes the relay chain: instead of parachains hardcoded into the protocol, you get services. Each service is three functions. Refine runs on cores - stateless, massively parallel. Accumulate takes the results and folds them into chain state. OnTransfer handles service-to-service messages. Parachains become just one service among many. The whole thing executes on PVM, so everything from the PolkaVM slides carries over.
 -->
 
 ---
 
 ## JAM Competition
-
-Same spec, same tests: step time per client (lower is better)
 
 <div style="font-size: 0.48em; margin-top: 0.8em;">
   <div style="display: flex; align-items: center; margin-bottom: 0.35em;">
@@ -582,7 +567,7 @@ Rust SC: plain Rust contracts compiled straight to RISC-V for PolkaVM with cargo
 
 Anchor: the de facto Solana framework. Proc macros generate account validation, instruction dispatch and an IDL, cutting most of the raw runtime boilerplate.
 
-Pinocchio: Anza's zero-dependency alternative. No macros, no allocator by default, minimal compute units, for teams that want full control and small binaries.
+Pinocchio: Anza's zero-dependency alternative. Macro-driven, but you can opt out of the default allocator for minimal compute units and tiny binaries.
 
 near-sdk-rs: Rust is the primary contract language on NEAR, compiled to Wasm.
 
@@ -594,9 +579,10 @@ Others: Soroban is Stellar's Rust-only contract platform, ICP canisters have a f
 -->
 
 ---
-## Smart contracts on PolkaVM
 
-Same chain, two doors in: Solidity and Rust
+## Smart contracts on PVM
+
+Solidity and Rust
 
 - **pallet_revive** - the FRAME pallet that deploys and executes PolkaVM contracts
 - **revive / resolc** - recompiles Solidity via YUL and LLVM to RISC-V
@@ -613,10 +599,6 @@ cargo-pvm-contract is the newest piece: a Cargo subcommand for writing contracts
 
 Dual VM stack: Polkadot Hub runs REVM for bytecode-level EVM compatibility and PolkaVM for performance. Deploy your Ethereum contract unchanged, or recompile it for speed - same chain either way.
 -->
-
----
-
-## Why RISC-V and why Rust?
 
 ---
 

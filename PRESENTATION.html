@@ -51,8 +51,8 @@
     <p><strong>Sui</strong></p>
   </div>
   <div>
-    <img src="./assets/logos/oasis.png" alt="Oasis" style="width: 120px;" />
-    <p><strong>Oasis</strong></p>
+    <img src="./assets/logos/aptos.png" alt="Aptos" style="width: 120px;" />
+    <p><strong>Aptos</strong></p>
   </div>
 </div>
 </section>
@@ -171,7 +171,7 @@
 <h2 id="without-frame-vs-with-frame">Without FRAME vs with FRAME</h2>
 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25em; align-items: start; font-size: 0.72em;">
 <div>
-<p><strong>Without</strong></p>
+<p><strong>Without FRAME</strong></p>
 <pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-rust"><span class="hljs-keyword">const</span> COUNTER_KEY: &amp;[<span class="hljs-type">u8</span>] = <span class="hljs-string">b&quot;counter&quot;</span>;
 
 <span class="hljs-keyword">fn</span> <span class="hljs-title function_">dispatch</span>(origin: Origin, <span class="hljs-keyword">mut</span> call: &amp;[<span class="hljs-type">u8</span>])
@@ -262,7 +262,6 @@ construct_runtime!(
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="18" data-class="invert" data-theme="default" lang="C" class="invert" style="--class:invert;--theme:default;">
 <h2 id="macros">Macros</h2>
-<p>You write the logic, macros write the protocol</p>
 <ul>
 <li><strong><code>#[pallet::*]</code></strong> - storage, calls, events, errors and metadata from a few attributes</li>
 <li><strong><code>construct_runtime!</code></strong> - composes pallets into a runtime with one macro call</li>
@@ -273,7 +272,6 @@ construct_runtime!(
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="19" data-class="invert" data-theme="default" lang="C" class="invert" style="--class:invert;--theme:default;">
 <h2 id="generics">Generics</h2>
-<p>One pallet, any chain: configuration through traits</p>
 <pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-rust"><span class="hljs-meta">#[pallet::config]</span>
 <span class="hljs-keyword">pub</span> <span class="hljs-keyword">trait</span> <span class="hljs-title class_">Config</span>: frame_system::Config {
     <span class="hljs-keyword">type</span> <span class="hljs-title class_">RuntimeEvent</span>: <span class="hljs-built_in">From</span>&lt;Event&lt;<span class="hljs-keyword">Self</span>&gt;&gt;;
@@ -290,7 +288,6 @@ construct_runtime!(
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="20" data-class="invert" data-theme="default" lang="C" class="invert" style="--class:invert;--theme:default;">
 <h2 id="predictable-execution">Predictable execution</h2>
-<p>The runtime is a pure function: same input, same output, on every node</p>
 <ul>
 <li><strong>Deterministic by construction</strong> - no floats, no clocks, no randomness, no threads</li>
 <li><strong>Weights</strong> - every call benchmarked, worst-case cost known before execution</li>
@@ -301,9 +298,7 @@ construct_runtime!(
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="21" data-class="invert" data-theme="default" lang="C" class="invert" style="--class:invert;--theme:default;">
 <h2 id="wasm-execution">WASM execution</h2>
-<p>The same Rust, two targets: native for the node, WASM for the chain</p>
 <ul>
-<li><strong><code>wasm32-unknown-unknown</code></strong> - the runtime builds as a <code>no_std</code> WASM blob</li>
 <li><strong>Wasmtime</strong> - the node compiles and runs whatever blob is in state</li>
 <li><strong>Sandboxed</strong> - WASM is the trust boundary between node and runtime</li>
 <li><strong>Host functions</strong> - storage, crypto and hashing provided by the node</li>
@@ -314,30 +309,31 @@ construct_runtime!(
 <h1 id="what-is-next-for-polkadot">What is next for Polkadot?</h1>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="23" data-class="invert" data-theme="default" lang="C" class="invert" style="--class:invert;--theme:default;">
-<h2 id="polkavm">PolkaVM</h2>
-<p>Our new virtual machine: RISC-V based, written in Rust</p>
+<h2 id="pvm--polkavm">PVM &amp; PolkaVM</h2>
+<p>RISC-V based, written in Rust</p>
 <ul>
 <li><strong>PVM vs PolkaVM</strong> - PVM is the spec (Gray Paper), PolkaVM is Parity's implementation</li>
 <li><strong>RISC-V</strong> - a real ISA instead of a custom bytecode, LLVM does the heavy lifting</li>
-<li><strong>Register-based</strong> - maps straight onto real CPUs, unlike the EVM's stack machine</li>
-<li><strong>Fast</strong> - single-pass O(n) recompiler, near-native execution</li>
-<li><strong>Sandboxed</strong> - own process per instance, deterministic, cheap gas metering</li>
+<li><strong>Register-based</strong> - maps straight onto real CPUs</li>
+<li><strong>Fast</strong> - O(n) recompilation, targets near-native execution</li>
+<li><strong>Sandboxed</strong> - per-instance process isolation, deterministic, cheap gas metering</li>
 </ul>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="24" data-class="invert" data-theme="default" lang="C" class="invert" style="--class:invert;--theme:default;">
 <h2 id="jam---join-accumulate-machine">JAM - Join-Accumulate Machine</h2>
-<p>Polkadot's next protocol: one spec, dozens of clients racing to implement it</p>
-<ul>
-<li><strong>Gray Paper</strong> - Gavin Wood's spec for replacing the relay chain protocol</li>
-<li><strong>Services</strong> - refine runs on cores in parallel, accumulate folds results into state</li>
-<li><strong>Runs on PVM</strong> - the RISC-V VM from the previous slides</li>
-<li><strong>43 teams</strong> - clients in Rust, C++, Zig, Go, Java, TypeScript, Swift, Python...</li>
-<li><strong>Rust is winning</strong> - PolkaJam is the fastest client in the benchmarks</li>
-</ul>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="25" data-class="invert" data-theme="default" lang="C" class="invert" style="--class:invert;--theme:default;">
+<h3 id="what-is-jam">What is JAM</h3>
+<ul>
+<li><strong>Refine</strong> - stateless, massively parallel computation on cores</li>
+<li><strong>Accumulate</strong> - folds refinement outputs into chain state</li>
+<li><strong>OnTransfer</strong> - handles messages between services</li>
+<li><strong>Services</strong> - the new abstraction, replacing parachains</li>
+<li><strong>Runs on PVM</strong> - the RISC-V VM is the execution layer</li>
+</ul>
+</section>
+</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="26" data-class="invert" data-theme="default" lang="C" class="invert" style="--class:invert;--theme:default;">
 <h2 id="jam-competition">JAM Competition</h2>
-<p>Same spec, same tests: step time per client (lower is better)</p>
 <div style="font-size: 0.48em; margin-top: 0.8em;">
   <div style="display: flex; align-items: center; margin-bottom: 0.35em;">
     <div style="width: 280px; text-align: right; padding-right: 1em;"><span style="opacity: 0.4;">1</span> <strong>PolkaJam recompiler</strong> <span style="opacity: 0.6;">Rust</span></div>
@@ -403,10 +399,10 @@ construct_runtime!(
   <p style="opacity: 0.5; margin-top: 0.6em; text-align: right;">weighted step time over W3F test vector traces - JAM conformance dashboard, May 2026</p>
 </div>
 </section>
-</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="26" data-class="invert" data-theme="default" lang="C" class="invert" style="--class:invert;--theme:default;">
+</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="27" data-class="invert" data-theme="default" lang="C" class="invert" style="--class:invert;--theme:default;">
 <h1 id="rust-in-smart-contracts">Rust in Smart Contracts</h1>
 </section>
-</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="27" data-class="invert" data-theme="default" lang="C" class="invert" style="--class:invert;--theme:default;">
+</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="28" data-class="invert" data-theme="default" lang="C" class="invert" style="--class:invert;--theme:default;">
 <h2 id="rust-as-a-smart-contract-language">Rust as a smart contract language</h2>
 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2em 2em; justify-items: center; align-items: end; text-align: center;">
   <div>
@@ -436,9 +432,9 @@ construct_runtime!(
 </div>
 <p style="opacity: 0.5; text-align: center; font-size: 0.7em; margin-top: 0.5em;">Also: Soroban (Stellar), Internet Computer, Casper</p>
 </section>
-</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="28" data-class="invert" data-theme="default" lang="C" class="invert" style="--class:invert;--theme:default;">
-<h2 id="smart-contracts-on-polkavm">Smart contracts on PolkaVM</h2>
-<p>Same chain, two doors in: Solidity and Rust</p>
+</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="29" data-class="invert" data-theme="default" lang="C" class="invert" style="--class:invert;--theme:default;">
+<h2 id="smart-contracts-on-pvm">Smart contracts on PVM</h2>
+<p>Solidity and Rust</p>
 <ul>
 <li><strong>pallet_revive</strong> - the FRAME pallet that deploys and executes PolkaVM contracts</li>
 <li><strong>revive / resolc</strong> - recompiles Solidity via YUL and LLVM to RISC-V</li>
@@ -446,9 +442,6 @@ construct_runtime!(
 <li><strong>Rust contracts</strong> - <code>cargo pvm-contract</code>: scaffold, build, get <code>.polkavm</code> + ABI</li>
 <li><strong>Dual VM stack</strong> - Polkadot Hub runs REVM and PolkaVM side by side</li>
 </ul>
-</section>
-</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="29" data-class="invert" data-theme="default" lang="C" class="invert" style="--class:invert;--theme:default;">
-<h2 id="why-risc-v-and-why-rust">Why RISC-V and why Rust?</h2>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="30" data-class="invert" data-theme="default" lang="C" class="invert" style="--class:invert;--theme:default;">
 <h2 id="rust-vs-solidity-on-polkavm">Rust vs Solidity on PolkaVM</h2>
@@ -532,21 +525,15 @@ Why only Rust. It needs four things at once: C-level speed, predictable latency,
 
 Why RISC-V: it's a real, open ISA. Anything with an LLVM backend compiles to it - Rust, C, C++, and Solidity through revive. The EVM is a custom stack machine no mainstream compiler targets; RISC-V registers map straight onto x86-64 and arm64 registers, so translation to native code is nearly mechanical.
 
-Fast in two senses. Compilation is single-pass and O(n), so loading a program is near-instant and there are no JIT bombs. Execution is competitive with the best WASM VMs. And the sandbox is a separate process with roughly 128 KB overhead per instance, so isolation doesn't cost the usual gigabytes of address space.
+These are design goals, mostly achieved today. Compilation targets single-pass O(n), so loading a program is near-instant and there are no JIT bombs. Execution is competitive with the best WASM VMs. And the sandbox design calls for a separate process with roughly 128 KB overhead per instance, so isolation doesn't cost the usual gigabytes of address space.
 
-Deterministic execution plus cheap, accurate gas metering - exactly the properties consensus needs from a VM.</p></div><div class="bespoke-marp-note" data-index="23" tabindex="0"><p>JAM = Join-Accumulate Machine. It generalizes Polkadot: instead of parachains hardcoded into the protocol, you get services. A service is three functions: refine runs on cores - stateless, massively parallel; accumulate takes the results and folds them into chain state; onTransfer handles service-to-service messages. Parachains become just one service among many. The whole thing runs on PVM, so everything from the PolkaVM slides carries over.
+Deterministic execution plus cheap, accurate gas metering - exactly the properties consensus needs from a VM.</p></div><div class="bespoke-marp-note" data-index="24" tabindex="0"><p>JAM = Join-Accumulate Machine. It generalizes the relay chain: instead of parachains hardcoded into the protocol, you get services. Each service is three functions. Refine runs on cores - stateless, massively parallel. Accumulate takes the results and folds them into chain state. OnTransfer handles service-to-service messages. Parachains become just one service among many. The whole thing executes on PVM, so everything from the PolkaVM slides carries over.</p></div><div class="bespoke-marp-note" data-index="25" tabindex="0"><p>Numbers come from Parity's JAM conformance dashboard: every client replays the same public W3F test vector traces, so this is an apples-to-apples measure of execution speed. Layout: the top 10 in the dashboard's own ranking, then the fastest client from each language that didn't make the top 10 (Java, Swift, TypeScript, Python, Scala). The metric is the dashboard's headline number, a weighted blend of mean/P50/P90/P99 per step, so it's slightly different from raw median.
 
-Deliberately multi-client: the JAM Implementers Prize, 10M DOT + 100k KSM, pushed 43 teams to build clients across five language categories, ~15 had submitted Milestone 1 conformance by early 2026. Milestones go from importer, to authorer, to full-speed audited client.
-
-The performance story: PolkaJam, Parity's Rust client, is the fastest in published benchmarks - its recompiler runs about 2.6x faster than baseline. TurboJam (C++) and JamZig (Zig) are the closest chasers; the GC languages are nowhere near. Be honest here: it's not that only Rust CAN be fast, it's that the fastest client is Rust, built by a tiny team, reusing the PolkaVM recompiler - the same single-pass tricks from two slides ago.
-
-Parity also runs the JAM Toaster, a supercomputer-scale test cluster, to test full-network JAM deployments before anything goes live.</p></div><div class="bespoke-marp-note" data-index="24" tabindex="0"><p>Numbers come from Parity's JAM conformance dashboard: every client replays the same public W3F test vector traces, so this is an apples-to-apples measure of execution speed. Layout: the top 10 in the dashboard's own ranking, then the fastest client from each language that didn't make the top 10 (Java, Swift, TypeScript, Python, Scala). The metric is the dashboard's headline number, a weighted blend of mean/P50/P90/P99 per step, so it's slightly different from raw median.
-
-The story: the top three are all Rust, five of the top ten are Rust, and PolkaJam's recompiler mode does a step in under 2ms. Go fills most of the rest of the top 10; Zig and Elixir sneak in at the bottom. Below the line, every remaining language's best entry is slower than the whole top 10: Java 13ms, Swift 24ms, TypeScript 29ms, Python 37ms, Scala 71ms - about 40x off the leader. Not &quot;only Rust can be fast&quot;, but the same tiny team reusing the PolkaVM recompiler tricks tops the chart.</p></div><div class="bespoke-marp-note" data-index="26" tabindex="0"><p>Rust SC: plain Rust contracts compiled straight to RISC-V for PolkaVM with cargo pvm-contract. The next slides go deep on this.
+The story: the top three are all Rust, five of the top ten are Rust, and PolkaJam's recompiler mode does a step in under 2ms. Go fills most of the rest of the top 10; Zig and Elixir sneak in at the bottom. Below the line, every remaining language's best entry is slower than the whole top 10: Java 13ms, Swift 24ms, TypeScript 29ms, Python 37ms, Scala 71ms - about 40x off the leader. Not &quot;only Rust can be fast&quot;, but the same tiny team reusing the PolkaVM recompiler tricks tops the chart.</p></div><div class="bespoke-marp-note" data-index="27" tabindex="0"><p>Rust SC: plain Rust contracts compiled straight to RISC-V for PolkaVM with cargo pvm-contract. The next slides go deep on this.
 
 Anchor: the de facto Solana framework. Proc macros generate account validation, instruction dispatch and an IDL, cutting most of the raw runtime boilerplate.
 
-Pinocchio: Anza's zero-dependency alternative. No macros, no allocator by default, minimal compute units, for teams that want full control and small binaries.
+Pinocchio: Anza's zero-dependency alternative. Macro-driven, but you can opt out of the default allocator for minimal compute units and tiny binaries.
 
 near-sdk-rs: Rust is the primary contract language on NEAR, compiled to Wasm.
 
@@ -554,7 +541,7 @@ CosmWasm: Rust contracts on Wasm, the contract layer for much of Cosmos: Neutron
 
 multiversx-sc: MultiversX is Rust-first, contracts compile to Wasm and the sc-meta tooling handles ABI generation and builds.
 
-Others: Soroban is Stellar's Rust-only contract platform, ICP canisters have a first-class Rust CDK, and Casper is Rust-first too. Aptos and Sui use Move, which is Rust-inspired but its own language.</p></div><div class="bespoke-marp-note" data-index="27" tabindex="0"><p>pallet_revive lives in polkadot-sdk, a heavily modified fork of pallet_contracts. Code is uploaded once and contracts instantiate by code hash, so ten copies of the same token cost one upload. Metering is three-dimensional - ref_time, proof_size, storage_deposit - and an Ethereum RPC proxy folds all three into a single &quot;gas&quot; number so existing tools don't notice.
+Others: Soroban is Stellar's Rust-only contract platform, ICP canisters have a first-class Rust CDK, and Casper is Rust-first too. Aptos and Sui use Move, which is Rust-inspired but its own language.</p></div><div class="bespoke-marp-note" data-index="28" tabindex="0"><p>pallet_revive lives in polkadot-sdk, a heavily modified fork of pallet_contracts. Code is uploaded once and contracts instantiate by code hash, so ten copies of the same token cost one upload. Metering is three-dimensional - ref_time, proof_size, storage_deposit - and an Ethereum RPC proxy folds all three into a single &quot;gas&quot; number so existing tools don't notice.
 
 revive (the resolc compiler) takes solc's YUL output through a custom LLVM build targeting embedded RISC-V. Existing Solidity recompiles as-is, but semantics are not 1:1 with the EVM: no 63/64 gas rule, instantiation by hash, fixed heap and stack limits. Contracts should be re-tested, not just redeployed.
 
