@@ -1,9 +1,13 @@
 ---
 marp: true
-theme: default
+theme: black
 class: invert
 html: true
+backgroundColor: '#000000'
 style: |
+  section h1 { font-size: 2.4em; }
+  section h2 { font-size: 1.8em; }
+  section h3 { font-size: 1.4em; }
   section::before {
     content: '';
     position: absolute;
@@ -13,7 +17,13 @@ style: |
     height: 80px;
     background: url('./assets/logo-white.png') no-repeat right top / contain;
   }
+  section.title::before { display: none; }
 ---
+
+<!-- _class: invert title -->
+![bg right fit](./assets/V1.png)
+
+<img src="./assets/Parity_Logo_White.svg" alt="Parity" style="position: absolute; top: 32px; left: 32px; width: 220px;" />
 
 # Rust in Protocols and Smart Contracts
 
@@ -32,9 +42,9 @@ style: |
 </div>
 
 ---
-# Which protocols use Rust
+# Rust in Protocols
 ---
-## Complete protocol in Rust
+## Protocols written in Rust
 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5em 2em; justify-items: center; text-align: center;">
   <div>
     <img src="./assets/logos/polkadot.svg" alt="Polkadot" style="width: 120px;" />
@@ -57,7 +67,7 @@ style: |
     <p><strong>Sui</strong></p>
   </div>
   <div>
-    <img src="./assets/logos/aptos.png" alt="Aptos" style="width: 120px;" />
+    <img src="./assets/logos/aptos.png" alt="Aptos" style="width: 120px;filter: invert(1);" />
     <p><strong>Aptos</strong></p>
   </div>
 </div>
@@ -83,7 +93,7 @@ style: |
     <p><strong>Trin</strong></p>
   </div>
   <div>
-    <img src="./assets/logos/zebra.png" alt="Zebra" style="max-height: 110px; max-width: 200px;" />
+    <img src="./assets/logos/zebra.png" alt="Zebra" style="max-height: 110px; max-width: 200px; background: rgba(128,128,128,0.35); border-radius: 12px; padding: 10px;" />
     <p><strong>Zebra</strong></p>
   </div>
   <div>
@@ -97,9 +107,11 @@ Reth is an execution client, Lighthouse and Grandine are consensus clients, Trin
 Zebra is a Zcash alt client, Floresta is a Bitcoin alt client.
 -->
 ---
-# Why they use it
+# Why Rust? 
 ---
-## Examples
+## Why Rust?
+
+Some examples of why protocols use Rust.
 
 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.2em; margin-top: 1.2em;">
   <div style="background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.18); border-radius: 12px; padding: 1.1em 1.3em;">
