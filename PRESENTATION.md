@@ -3,6 +3,16 @@ marp: true
 theme: default
 class: invert
 html: true
+style: |
+  section::before {
+    content: '';
+    position: absolute;
+    top: 28px;
+    right: 32px;
+    width: 80px;
+    height: 80px;
+    background: url('./assets/logo-white.png') no-repeat right top / contain;
+  }
 ---
 
 # Rust in Protocols and Smart Contracts
