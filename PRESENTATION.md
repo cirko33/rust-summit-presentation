@@ -145,7 +145,7 @@ Everything is Rust end to end: the node, the runtime, the tooling. The runtime c
 
 The framework that gives you a working blockchain out of the box
 
-- **Node + runtime split** - the node runs the infrastructure, the runtime is your chain's logic
+- **Node + Runtime** - the node runs the infrastructure, the runtime is your chain's logic
 - **Infrastructure for free** - libp2p networking, database, transaction pool, RPC
 - **Pluggable consensus** - Aura, BABE + GRANDPA, PoW, or write your own
 - **Chain-agnostic node** - the node just executes whatever runtime you give it
