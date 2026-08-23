@@ -581,8 +581,11 @@ The story: the top three are all Rust, five of the top ten are Rust, and PolkaJa
 
 
 ---
+
 <h1 style="display: flex; align-items: center; gap: 0.5em;">Run in Smart Contracts <img src="./assets/logos/rust.png" alt="Ferris" style="max-height: 90px;" /></h1>
+
 ---
+
 ## Rust as a smart contract language
 
 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2em 2em; justify-items: center; align-items: end; text-align: center;">
@@ -709,3 +712,9 @@ mod counter {
 </div>
 
 ---
+
+![bg fit](./assets/questions.png)
+
+---
+
+![bg fit](./assets/end.png)
