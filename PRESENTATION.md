@@ -19,6 +19,7 @@ style: |
     background: url('./assets/logo-white.png') no-repeat right top / contain;
   }
   section.title::before { display: none; }
+  section::after { font-size: 0.5em; }
 ---
 
 <!-- _class: invert title -->
@@ -171,7 +172,7 @@ Everything is Rust end to end: the node, the runtime, the tooling. The runtime c
 ---
 ## Substrate
 
-Framework for building blockchains
+Rust framework for building blockchains
 
 - **Node + Runtime** - the node runs the infrastructure, the runtime defines logic
 - **Infrastructure** - libp2p networking, database, transaction pool, RPC
@@ -468,6 +469,7 @@ RISC-V based, written in Rust
 - **Register-based** - maps straight onto real CPUs
 - **Fast** - O(n) recompilation, targets near-native execution
 - **Sandboxed** - per-instance process isolation, deterministic, cheap gas metering
+- **Metered** - instead of having weights before execution spending is measured on-go
 
 <!--
 PVM is the standard: which instructions exist and what their semantics are, specified in the JAM Gray Paper. PolkaVM is our Rust implementation of it, mostly written by one engineer, Jan Bujak. That's the Rust productivity story in one line.
@@ -481,7 +483,7 @@ Deterministic execution plus cheap, accurate gas metering - exactly the properti
 
 
 ---
-## JAM - Join-Accumulate Machine
+<img src="./assets/logos/jam.png" alt="JAM - Join-Accumulate Machine" style="display: block; margin: 0 auto; max-height: 380px;" />
 
 ---
 
