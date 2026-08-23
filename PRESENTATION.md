@@ -45,7 +45,7 @@ style: |
 </div>
 
 ---
-# Rust in Protocols
+<h1 style="display: flex; align-items: center; gap: 0.5em;">Rust in Protocols <img src="./assets/logos/rust.png" alt="Ferris" style="max-height: 90px;" /></h1>
 ---
 ## Protocols written in Rust
 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5em 2em; justify-items: center; text-align: center;">
@@ -390,7 +390,12 @@ Because the weight is known before execution, the transaction pool can price and
 
 ---
 
-# Rust in Polkadot
+<h1 style="display: flex; align-items: center; gap: 0.6em;">Rust in Polkadot
+  <span style="position: relative; display: inline-block; width: 160px; height: 170px;">
+    <img src="./assets/logos/Polkadot_Token_White.png" alt="Polkadot" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); height: 170px;" />
+    <img src="./assets/logos/rust.png" alt="Ferris" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 85px;" />
+  </span>
+</h1>
 
 ---
 
@@ -576,7 +581,7 @@ The story: the top three are all Rust, five of the top ten are Rust, and PolkaJa
 
 
 ---
-# Rust in Smart Contracts
+<h1 style="display: flex; align-items: center; gap: 0.5em;">Run in Smart Contracts <img src="./assets/logos/rust.png" alt="Ferris" style="max-height: 90px;" /></h1>
 ---
 ## Rust as a smart contract language
 
@@ -649,7 +654,7 @@ Dual VM stack: Polkadot Hub runs REVM for bytecode-level EVM compatibility and P
 
 ---
 
-## Rust vs Solidity on PolkaVM
+## Rust vs Solidity on PVM
 
 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25em; align-items: start; font-size: 0.7em;">
 
