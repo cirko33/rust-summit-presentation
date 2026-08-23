@@ -391,8 +391,8 @@ Because the weight is known before execution, the transaction pool can price and
 ---
 
 <h1 style="display: flex; align-items: center; gap: 0.6em;">Rust in Polkadot
-  <span style="position: relative; display: inline-block; width: 160px; height: 170px;">
-    <img src="./assets/logos/Polkadot_Token_White.png" alt="Polkadot" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); height: 170px;" />
+  <span style="position: relative; display: inline-block;">
+    <img src="./assets/logos/Polkadot_Token_White.png" alt="Polkadot" style="display: block; height: 170px; width: auto; max-width: none;" />
     <img src="./assets/logos/rust.png" alt="Ferris" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 85px;" />
   </span>
 </h1>
