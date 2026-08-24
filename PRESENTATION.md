@@ -45,8 +45,11 @@ style: |
 </div>
 
 ---
+
 <h1 style="display: flex; align-items: center; gap: 0.5em;">Rust in Protocols <img src="./assets/logos/rust.png" alt="Ferris" style="max-height: 90px;" /></h1>
+
 ---
+
 ## Protocols written in Rust
 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5em 2em; justify-items: center; text-align: center;">
   <div>
