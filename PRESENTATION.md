@@ -311,7 +311,6 @@ The chain's whole logic, compiled from Rust to **WASM** and stored on-chain
 
 - **Executed block by block** - the node runs whatever blob is in storage
 - **Forkless upgrades** - one transaction swaps the blob, next block runs the new logic
-- **No coordination** - no node updates, no repo pulls, no hard fork
 - **Replay** - anyone can replay whole blockchain with runtimes that were active at the time.
 - **The cost** - `no_std` only, the std library is off limits
 
