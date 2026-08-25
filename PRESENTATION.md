@@ -50,7 +50,7 @@ style: |
 
 ---
 
-## Protocols written in Rust
+## Original Node written in Rust
 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5em 2em; justify-items: center; text-align: center;">
   <div>
     <img src="./assets/logos/polkadot.svg" alt="Polkadot" style="width: 120px;" />
@@ -79,7 +79,7 @@ style: |
 </div>
 
 ---
-## Clients written in Rust
+## Alternative Node written in Rust
 
 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5em 2em; justify-items: center; align-items: end; text-align: center;">
   <div>
@@ -496,14 +496,19 @@ Deterministic execution plus cheap, accurate gas metering - exactly the properti
 
 ### What is JAM
 
+- **Generalizes Polkadot** - services replace hardcoded parachains, breaking the silos
 - **Refine** - stateless, massively parallel computation on cores
 - **Accumulate** - folds refinement outputs into chain state
 - **OnTransfer** - handles messages between services
-- **Services** - the new abstraction, replacing parachains
+- **D3 Lake** - distributed data lake, ~850 MB/s of shared data availability
 - **Runs on PVM** - the RISC-V VM is the execution layer
 
 <!--
-JAM = Join-Accumulate Machine. It generalizes the relay chain: instead of parachains hardcoded into the protocol, you get services. Each service is three functions. Refine runs on cores - stateless, massively parallel. Accumulate takes the results and folds them into chain state. OnTransfer handles service-to-service messages. Parachains become just one service among many. The whole thing executes on PVM, so everything from the PolkaVM slides carries over.
+JAM = Join-Accumulate Machine. It's a further generalization and expansion of the original protocol: instead of parachains hardcoded into the protocol, you get services. Each service is three functions. Refine runs on cores - stateless, massively parallel. Accumulate takes the results and folds them into chain state. OnTransfer handles service-to-service messages. Parachains become just one service among many.
+
+On Polkadot, parachains are quite siloed - each one keeps its own state and crossing the boundary means XCM messages. JAM breaks those boundaries: services live side by side in one environment and share the D3 Lake, the distributed data lake - an erasure-coded availability layer spread across the validators, around 850 MB/s of bandwidth, roughly 42x what Polkadot does today. Refine outputs land in the lake and other services can import them, so data flows between services without the old parachain walls.
+
+The whole thing executes on PVM, so everything from the PolkaVM slides carries over.
 -->
 
 ---
