@@ -589,7 +589,7 @@ The story: the top three are all Rust, five of the top ten are Rust, and PolkaJa
 
 ---
 
-<h1 style="display: flex; align-items: center; gap: 0.5em;">Run in Smart Contracts <img src="./assets/logos/rust.png" alt="Ferris" style="max-height: 90px;" /></h1>
+<h1 style="display: flex; align-items: center; gap: 0.5em;">Rust in Smart Contracts <img src="./assets/logos/rust.png" alt="Ferris" style="max-height: 90px;" /></h1>
 
 ---
 
