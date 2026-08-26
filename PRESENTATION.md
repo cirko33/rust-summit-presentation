@@ -78,6 +78,15 @@ style: |
   </div>
 </div>
 
+<!--
+Polkadot: built on Substrate, our Rust framework - node and runtime are Rust end to end.
+Solana: the original validator (now Agave) is Rust; the 400ms slot times basically demand it.
+Hyperliquid: L1 with its own HyperBFT consensus, whole node written in Rust, closed source.
+NEAR: nearcore is Rust, sharded chain (Nightshade), and Rust is also its main contract language.
+Sui: Mysten Labs, Rust node with Move contracts, grew out of Meta's Diem work.
+Aptos: also a Diem descendant - aptos-core in Rust, contracts in Move.
+-->
+
 ---
 ## Alternative Node written in Rust
 
@@ -109,8 +118,12 @@ style: |
 </div>
 
 <!--
-Reth is an execution client, Lighthouse and Grandine are consensus clients, Trin is a light client - all Ethereum.
-Zebra is a Zcash alt client, Floresta is a Bitcoin alt client.
+Reth: Ethereum execution node by Paradigm, built for speed and modularity.
+Lighthouse: Ethereum consensus node by Sigma Prime, among the most-run validators.
+Grandine: Ethereum consensus node focused on high performance and parallelization.
+Trin: Ethereum light node for the Portal Network, by the Ethereum Foundation.
+Zebra: independent Zcash node by the Zcash Foundation, alternative to zcashd.
+Floresta: lightweight Bitcoin node using utreexo, runs on tiny hardware.
 -->
 ---
 
@@ -131,7 +144,7 @@ Some examples of why protocols use Rust.
     <p style="margin: 0.4em 0 0; opacity: 0.75;">no GC pauses on the hot path</p>
   </div>
   <div style="background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.18); border-radius: 12px; padding: 1.1em 1.3em;">
-    <strong>Fearless concurrency</strong>
+    <strong>Concurrency and Parallelization</strong>
     <p style="margin: 0.4em 0 0; opacity: 0.75;">networking, DB and VM all run in parallel</p>
   </div>
   <div style="background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.18); border-radius: 12px; padding: 1.1em 1.3em;">
@@ -167,7 +180,7 @@ Our monorepo built in Rust
 <!--
 Polkadot SDK is our monorepo, ~3 million lines of Rust, one of the largest Rust codebases anywhere. Two parts matter for this talk: Substrate and FRAME.
 
-The idea: don't build a chain from scratch, compose one. Substrate gives you the node infrastructure for free, FRAME gives you building blocks like balances, staking, governance - you write only the logic that makes your chain different.
+The idea: don't build a chain from scratch, compose one with existing components.
 
 Everything is Rust end to end: the node, the runtime, the tooling. The runtime compiles to WASM, which is where the next slides pick up.
 -->
@@ -277,9 +290,6 @@ The runtime as functions over raw key-value storage: you invent storage keys and
 ---
 ## With FRAME
 
-<style scoped>
-pre { font-size: 0.65em; }
-</style>
 
 ```rust
     #[pallet::storage]
@@ -385,7 +395,7 @@ Why only Rust. It needs four things at once: C-level speed, predictable latency,
 - **Refunds** - a call that used less than its worst case refunds the difference
 
 <!--
-There is no gas metering at runtime - metering costs performance. Instead every call is benchmarked ahead of time on reference hardware, against worst-case inputs, and the result is the weight baked into the runtime.
+There is no gas metering at runtime. Instead every call is benchmarked ahead of time on reference hardware, against worst-case inputs, and the result is the weight baked into the runtime.
 
 Because the weight is known before execution, the transaction pool can price and fill blocks without running anything. If the call turns out cheaper than the worst case, the difference is refunded post-dispatch.
 -->
