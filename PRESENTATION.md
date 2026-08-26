@@ -94,7 +94,7 @@ First part: Rust in protocols. Before we get into why, let's look at who actuall
 Polkadot: built on Substrate, our Rust framework - node and runtime are Rust end to end.
 Solana: the original validator (now Agave) is Rust; the 400ms slot times basically demand it.
 Hyperliquid: L1 with its own HyperBFT consensus, whole node written in Rust, closed source.
-NEAR: nearcore is Rust, sharded chain (Nightshade), and Rust is also its main contract language.
+NEAR: nearcore is Rust, and Rust is also its main contract language.
 Sui: Mysten Labs, Rust node with Move contracts, grew out of Meta's Diem work.
 Aptos: also a Diem descendant - aptos-core in Rust, contracts in Move.
 -->
@@ -134,7 +134,7 @@ Reth: Ethereum execution node by Paradigm, built for speed and modularity.
 Lighthouse: Ethereum consensus node by Sigma Prime, among the most-run validators.
 Grandine: Ethereum consensus node focused on high performance and parallelization.
 Trin: Ethereum light node for the Portal Network, by the Ethereum Foundation.
-Zebra: independent Zcash node by the Zcash Foundation, alternative to zcashd.
+Zebra: alternative to zcashd that is now deprecated, so its becoming main node.
 Floresta: lightweight Bitcoin node using utreexo, runs on tiny hardware.
 -->
 ---
@@ -346,7 +346,6 @@ The chain's whole logic, compiled from Rust to **WASM** and stored on-chain
 - **Executed block by block** - the node runs whatever blob is in storage
 - **Forkless upgrades** - one transaction swaps the blob, next block runs the new logic
 - **Replay** - anyone can replay whole blockchain with runtimes that were active at the time.
-- **The cost** - `no_std` only, the std library is off limits
 
 <!--
 The runtime lives in chain state under the :code key. Every block, the node loads that blob and executes it - the logic of the chain is itself just data on the chain.
@@ -354,8 +353,6 @@ The runtime lives in chain state under the :code key. Every block, the node load
 Upgrade = a set_code transaction, approved through governance, that replaces the blob. From the next block every node runs the new logic. No "please update your binary by Tuesday", no fork.
 
 The blob is compressed Rust-to-WASM, capped at 5 MiB compressed for parachain code, and the upgrade transaction basically fills a whole block.
-
-Trade-off: there is no OS under that WASM, so the runtime is no_std Rust - no filesystem, no network, no threads, no std.
 -->
 
 ---
@@ -528,6 +525,16 @@ Why RISC-V: it's a real, open ISA. Anything with an LLVM backend compiles to it 
 These are design goals, mostly achieved today. Compilation targets single-pass O(n), so loading a program is near-instant and there are no JIT bombs. Execution is competitive with the best WASM VMs. And the sandbox design calls for a separate process with roughly 128 KB overhead per instance, so isolation doesn't cost the usual gigabytes of address space.
 
 Deterministic execution plus cheap, accurate gas metering - exactly the properties consensus needs from a VM.
+
+First, some terminology, because these two names get mixed up constantly. PVM is the specification. It's the document that says which instructions exist and what they do. PolkaVM is our implementation of that spec, written in Rust.
+
+It's built on RISC-V. That's a real, open instruction set — the same one you find in actual hardware. Why does that help? Because anything that compiles through LLVM can compile to RISC-V. Rust, C, C++, and Solidity. We don't have to build our own compiler — LLVM does the heavy lifting.
+
+The second nice thing is that RISC-V is register-based, just like real processors. Instructions map almost directly onto what a CPU already understands, so translating to native code is straightforward. That's where the speed comes from.
+
+Sandboxed — every program runs in isolation, deterministically, and metering is cheap.
+
+And the last point, which is the difference from the weights you heard about earlier. With weights, the cost is measured up front. Here, spending is measured as you go, while the code runs.
 -->
 
 
@@ -555,6 +562,22 @@ JAM = Join-Accumulate Machine. It's a further generalization and expansion of th
 On Polkadot, parachains are quite siloed - each one keeps its own state and crossing the boundary means XCM messages. JAM breaks those boundaries: services live side by side in one environment and share the D3 Lake, the distributed data lake - an erasure-coded availability layer spread across the validators, around 850 MB/s of bandwidth, roughly 42x what Polkadot does today. Refine outputs land in the lake and other services can import them, so data flows between services without the old parachain walls.
 
 The whole thing executes on PVM, so everything from the PolkaVM slides carries over.
+
+JAM generalizes Polkadot.
+
+Today, parachains are baked into the protocol itself — Polkadot knows what a parachain is. In JAM, that's gone. Instead you have services, and a parachain becomes just one service among many. That's the "breaking the silos" part on the slide.
+
+A service is three functions, and those are the next three bullets.
+
+Refine is computation. It runs on cores, it doesn't touch state, and because of that it can run massively in parallel.
+
+Accumulate takes those results and folds them into the chain state.
+
+OnTransfer is communication — messages between services.
+
+Then the lake. Today every parachain keeps its data separately, and crossing that boundary means sending an XCM message. The D3 Lake is a shared space for data, spread across the validators. Around 850 megabytes per second — roughly 42 times what Polkadot does today. One service drops a result in, another picks it up. No more walls.
+
+And finally — all of this runs on PVM. So the machine from the previous slide is the execution layer for JAM.
 -->
 
 ---
@@ -630,6 +653,16 @@ The whole thing executes on PVM, so everything from the PolkaVM slides carries o
 Numbers come from Parity's JAM conformance dashboard: every client replays the same public W3F test vector traces, so this is an apples-to-apples measure of execution speed. Layout: the top 10 in the dashboard's own ranking, then the fastest client from each language that didn't make the top 10 (Java, Swift, TypeScript, Python, Scala). The metric is the dashboard's headline number, a weighted blend of mean/P50/P90/P99 per step, so it's slightly different from raw median.
 
 The story: the top three are all Rust, five of the top ten are Rust, and PolkaJam's recompiler mode does a step in under 2ms. Go fills most of the rest of the top 10; Zig and Elixir sneak in at the bottom. Below the line, every remaining language's best entry is slower than the whole top 10: Java 13ms, Swift 24ms, TypeScript 29ms, Python 37ms, Scala 71ms - about 40x off the leader. Not "only Rust can be fast", but the same tiny team reusing the PolkaVM recompiler tricks tops the chart.
+
+Now something concrete. These numbers come from our conformance dashboard. Several teams are writing their own JAM implementation, they all run the same test vectors, so this is a fair comparison.
+
+The top ten is up here. Below the line is the fastest client from each language that didn't make the top ten.
+
+The story is pretty clear. The top three are all Rust. Five of the top ten are Rust. The fastest one does a step in under two milliseconds. Go fills most of the rest.
+
+And below the line — the best entry from every remaining language is slower than the entire top ten. Java, Swift, Python, and Scala at the bottom. Scala is about forty times slower than the leader.
+
+The point isn't that only Rust can be fast. The point is that the teams writing in Rust consistently end up at the top of this table.
 -->
 
 
@@ -688,6 +721,18 @@ CosmWasm: Rust contracts on Wasm, the contract layer for much of Cosmos: Neutron
 multiversx-sc: MultiversX is Rust-first, contracts compile to Wasm and the sc-meta tooling handles ABI generation and builds.
 
 Others: Soroban is Stellar's Rust-only contract platform, ICP canisters have a first-class Rust CDK, and Casper is Rust-first too. Aptos and Sui use Move, which is Rust-inspired but its own language.
+
+Rust isn't a contract language only on Polkadot. This is already a broad ecosystem.
+
+Rust SC is Polkadot — that's what the next two slides are about.
+
+Anchor is the main framework on Solana; its macros generate most of the boilerplate for you. Pinocchio is the lighter alternative on Solana, for when you want the smallest and cheapest contract possible.
+
+On NEAR, Rust is the primary contract language. CosmWasm is the contract layer for a large part of the Cosmos ecosystem — Osmosis, Injective, and plenty of other chains. MultiversX is Rust-first as well.
+
+And there's more at the bottom — Soroban on Stellar is Rust-only, and so are Internet Computer and Casper.
+
+So if you write contracts in Rust, that knowledge carries across chains.
 -->
 
 ---
@@ -710,6 +755,18 @@ revive (the resolc compiler) takes solc's YUL output through a custom LLVM build
 cargo-pvm-contract is the newest piece: a Cargo subcommand for writing contracts in Rust directly. Proc macros for dispatch, Solidity-compatible ABI JSON generated at build time, no_std encoding to keep binaries tiny.
 
 Dual VM stack: Polkadot Hub runs REVM for bytecode-level EVM compatibility and PolkaVM for performance. Deploy your Ethereum contract unchanged, or recompile it for speed - same chain either way.
+
+Solidity and Rust, on the same machine.
+
+pallet_revive is the runtime module that deploys and executes contracts. It's the entry point for everything else on this slide.
+
+revive, or resolc, is the compiler for Solidity. It takes ordinary Solidity code and compiles it to RISC-V instead of EVM bytecode. An existing contract recompiles as-is.
+
+And that's why Ethereum tooling works — Hardhat, Foundry, Remix, MetaMask. There's an RPC layer that behaves like an Ethereum node, so the tools don't notice the difference.
+
+Rust contracts go through cargo pvm-contract. It scaffolds the project, builds it, and gives you the contract and the ABI.
+
+And finally, the dual VM stack. Polkadot Hub runs two machines side by side. REVM executes standard Ethereum bytecode directly. That's where you bring your contract over with no changes, and it's the starting point for most people. PolkaVM is there when you need the performance. Same chain either way; you pick per project.
 -->
 
 ---
