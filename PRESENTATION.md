@@ -30,6 +30,10 @@ style: |
 
 # Rust in Protocols and Smart Contracts
 
+<!--
+Hi everyone. This talk is about Rust in blockchain, from two angles: Rust as the language protocols themselves are built in, and Rust as a language you write smart contracts in.
+-->
+
 ---
 ## Introduction
 
@@ -44,9 +48,17 @@ style: |
   </div>
 </div>
 
+<!--
+Quick intro. I'm Luka, core developer at Parity, and this is Dragan, applied engineer. We both work at Parity, building Polkadot protocol and things around it. Today we'll show you how blockchains use Rust in general, and then take a closer look at how Polkadot puts it to work.
+-->
+
 ---
 
 <h1 style="display: flex; align-items: center; gap: 0.5em;">Rust in Protocols <img src="./assets/logos/rust.png" alt="Ferris" style="max-height: 90px;" /></h1>
+
+<!--
+First part: Rust in protocols. Before we get into why, let's look at who actually runs on Rust. Two groups: chains whose original node was written in Rust, and chains where someone came back later and wrote an alternative node in Rust.
+-->
 
 ---
 
@@ -129,6 +141,10 @@ Floresta: lightweight Bitcoin node using utreexo, runs on tiny hardware.
 
 <h1 style="display: flex; align-items: center; gap: 0.5em;">Why Rust? <img src="./assets/logos/rust.png" alt="Ferris" style="max-height: 90px;" /></h1>
 
+<!--
+So that's who. Now the obvious question: why do all these teams keep landing on the same language?
+-->
+
 ---
 ## Why Rust?
 
@@ -166,6 +182,10 @@ Correctness: you cannot hotfix consensus, a bad block is final and the bug is wo
 ---
 
 <h1 style="display: flex; align-items: center; gap: 0.5em;">Polkadot <img src="./assets/logos/polkadot.svg" alt="Polkadot" style="max-height: 90px;" /></h1>
+
+<!--
+Now the chain we know best. Let's look at how Polkadot is built and where Rust fits into it.
+-->
 
 ---
 ## Polkadot SDK
@@ -235,6 +255,10 @@ pub mod pallet {
     }
 }
 ```
+
+<!--
+This is a complete piece of chain logic: a counter anyone can increment. Don't read every line. One attribute declares the storage, one marks the calls, ensure_signed checks who's calling. Storage is a typed value, not raw bytes. This is FRAME code, and FRAME is the next slide.
+-->
 
 ---
 ## FRAME
@@ -409,6 +433,10 @@ Because the weight is known before execution, the transaction pool can price and
   </span>
 </h1>
 
+<!--
+You've seen the architecture. Now let's zoom in on the language itself: the Rust features that make this design work, and what we get out of each one.
+-->
+
 ---
 
 ## Macros
@@ -476,6 +504,10 @@ One codebase, two compilation targets, no spec drift. Compiled runtimes are cach
 
 # What is next for Polkadot?
 
+<!--
+So far you've seen how Polkadot works today. I'm going to show you what's coming next. Two things: a new virtual machine, and JAM. And then a different angle — Rust as a smart contract language.
+-->
+
 ---
 ## PVM & PolkaVM
 
@@ -501,6 +533,10 @@ Deterministic execution plus cheap, accurate gas metering - exactly the properti
 
 ---
 <img src="./assets/logos/jam.png" alt="JAM - Join-Accumulate Machine" style="display: block; margin: 0 auto; max-height: 380px;" />
+
+<!--
+This is the second big piece. JAM — the Join-Accumulate Machine.
+-->
 
 ---
 
@@ -600,6 +636,10 @@ The story: the top three are all Rust, five of the top ten are Rust, and PolkaJa
 ---
 
 <h1 style="display: flex; align-items: center; gap: 0.5em;">Rust in Smart Contracts <img src="./assets/logos/rust.png" alt="Ferris" style="max-height: 90px;" /></h1>
+
+<!--
+So far we've talked about the protocol — the node, the virtual machine. Now the other angle: Rust as a language for writing smart contracts.
+-->
 
 ---
 
@@ -727,6 +767,20 @@ mod counter {
 </div>
 
 </div>
+
+<!--
+And here's the concrete comparison. The same contract — a simple counter — in both languages.
+
+On the left, Solidity. This is what anyone who's written for Ethereum already knows. Nothing new here, and that's the point.
+
+On the right, the same contract in Rust. The structure is always the same: one attribute describes what the contract stores, another marks the module as a contract, and a third marks the methods callable from outside. The macros generate everything else — entry points, call routing, encoding.
+
+The important part is that this is compatible with Solidity at the ABI and storage level. In practice that means Ethereum libraries work unchanged, and a Solidity contract and a Rust contract can call each other directly.
+
+Rust is more verbose on a tiny example s. But you get the whole Cargo ecosystem, real testing, and types that hold up once the contract grows.
+
+And that's the whole story in one line: the same language from the node, through the runtime, all the way to the contract.
+-->
 
 ---
 
