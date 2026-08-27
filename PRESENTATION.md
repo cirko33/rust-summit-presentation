@@ -522,7 +522,7 @@ First, some terminology, because these two names get mixed up constantly. PVM is
 
 It's built on RISC-V. That's a real, open instruction set — the same one you find in actual hardware. Why does that help? Because anything that compiles through LLVM can compile to RISC-V. Rust, C, C++, and Solidity. We don't have to build our own compiler — LLVM does the heavy lifting.
 
-The second nice thing is that RISC-V is register-based, just like real processors. Instructions map almost directly onto what a CPU already understands, so translating to native code is straightforward. That's where comes from.
+The second nice thing is that RISC-V is register-based, just like real processors. Instructions map almost directly onto what a CPU already understands, so translating to native code is straightforward. That's where the speed comes from.
 
 Sandboxed — every program runs in isolation, deterministically, and metering is cheap.
 
@@ -694,7 +694,7 @@ Rust SC is Polkadot — that's what the next two slides are about.
 
 Anchor is the main framework on Solana; its macros generate most of the boilerplate for you. Pinocchio is the lighter alternative on Solana, for when you want the smallest and cheapest contract possible.
 
-On NEAR, Rust is the primary contract language. CosmWasm is the contract layer for a large part of the Cosmos ecosystem — Osmosis, Injective, and plenty of other chainrsX is Rust-first as well.
+On NEAR, Rust is the primary contract language. CosmWasm is the contract layer for a large part of the Cosmos ecosystem — Osmosis, Injective, and plenty of other chains. MultiversX is Rust-first as well.
 
 And there's more at the bottom — Soroban on Stellar is Rust-only, and so are Internet Computer and Casper.
 
