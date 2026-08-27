@@ -560,7 +560,7 @@ Accumulate takes those results and folds them into the chain state.
 
 OnTransfer is communication — messages between services.
 
-Then therake. Today every parachain keeps its data separately, and crossing that boundary means sending an XCM message. The D3 Lake is a shared space for data, spread across the validators. Around 850 megabytes per second — roughly 42 times what Polkadot does today. One service drops a result in, another picks it up. No more walls.
+Then there's the D3 Lake. Today every parachain keeps its data separately, and crossing that boundary means sending an XCM message. The D3 Lake is a shared space for data, spread across the validators. Around 850 megabytes per second — roughly 42 times what Polkadot does today. One service drops a result in, another picks it up. No more walls.
 
 And finally — all of this runs on PVM. So the machine from the previous slide is the execution layer for JAM.
 -->
