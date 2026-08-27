@@ -799,8 +799,4 @@ And that's the whole story in one line: the same language from the node, through
 
 ---
 
-![bg fit](./assets/questions.png)
-
----
-
 ![bg fit](./assets/end.png)
