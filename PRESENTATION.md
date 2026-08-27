@@ -641,7 +641,7 @@ The top ten is up here. Below the line is the fastest client from each language 
 
 The story is pretty clear. The top three are all Rust. Five of the top ten are Rust. The fastest one does a step in under two milliseconds. Go fills most of the rest.
 
-And below the line — the best entry from every remaining language isthan the entire top ten. Java, Swift, Python, and Scala at the bottom. Scala is about forty times slower than the leader.
+And below the line — the best entry from every remaining language is slower than the entire top ten. Java, Swift, Python, and Scala at the bottom. Scala is about forty times slower than the leader.
 
 The point isn't that only Rust can be fast. The point is that the teams writing in Rust consistently end up at the top of this table.
 -->
@@ -724,7 +724,7 @@ And that's why Ethereum tooling works — Hardhat, Foundry, Remix, MetaMask. The
 
 Rust contracts go through cargo pvm-contract. It scaffolds the project, builds it, and gives you the contract and the ABI.
 
-And finally, the dual VM stack. Polkadot Hub runs two machines side by side. REVM executes standard Ethereum bytecode directlat's where you bring your contract over with no changes, and it's the starting point for most people. PolkaVM is there when you need the performance. Same chain either way; you pick per project.
+And finally, the dual VM stack. Polkadot Hub runs two machines side by side. REVM executes standard Ethereum bytecode directly — that's where you bring your contract over with no changes, and it's the starting point for most people. PolkaVM is there when you need the performance. Same chain either way; you pick per project.
 -->
 
 ---
@@ -792,7 +792,7 @@ On the right, the same contract in Rust. The structure is always the same: one a
 
 The important part is that this is compatible with Solidity at the ABI and storage level. In practice that means Ethereum libraries work unchanged, and a Solidity contract and a Rust contract can call each other directly.
 
-Rust is more verbose on a tiny example s. But you get the whole Cargo ecosystem, real testing, and types that hold up once the contract grows.
+Rust is more verbose on a tiny example like this. But you get the whole Cargo ecosystem, real testing, and types that hold up once the contract grows.
 
 And that's the whole story in one line: the same language from the node, through the runtime, all the way to the contract.
 -->
